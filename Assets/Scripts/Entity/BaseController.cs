@@ -13,18 +13,26 @@ public abstract class BaseController : MonoBehaviour
     protected Vector2 movementDirection = Vector2.zero;
     public Vector2 MovementDirection { get { return movementDirection; } }
 
-
     // 바라보는 방향
     protected Vector2 lookDirection = Vector2.zero;
     public Vector2 LookDirection { get { return lookDirection; } }
 
-
+    // 넉백 관련
     private Vector2 knockBack = Vector2.zero;
     private float knockbackDuration = 0f;
+
+    // 애니메이션 관련
+    protected AnimationHandler m_animationHandler;
+
+
+
+
+
 
     protected virtual void Awake()
     {
         m_rigidbody2D = GetComponent<Rigidbody2D>();
+        m_animationHandler = GetComponent<AnimationHandler>();
     }
 
     protected abstract void Start();
@@ -68,6 +76,9 @@ public abstract class BaseController : MonoBehaviour
 
         // direction을 강체의 속도에 적용한다.
         m_rigidbody2D.velocity = direction;
+
+        // 움직임에 따른 애니메이션 적용
+        m_animationHandler.Move(direction);
     }
 
     // 컨트롤 되는 모든 객체를 특정 방향으로 회전시키는 함수
