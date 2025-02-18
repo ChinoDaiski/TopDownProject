@@ -23,7 +23,7 @@ public abstract class BaseController : MonoBehaviour
 
     // 애니메이션 관련
     protected AnimationHandler m_animationHandler;
-
+    protected StatHandler m_statHandler;
 
 
 
@@ -33,6 +33,7 @@ public abstract class BaseController : MonoBehaviour
     {
         m_rigidbody2D = GetComponent<Rigidbody2D>();
         m_animationHandler = GetComponent<AnimationHandler>();
+        m_statHandler = GetComponent<StatHandler>();
     }
 
     protected abstract void Start();
@@ -62,7 +63,8 @@ public abstract class BaseController : MonoBehaviour
 
     private void Movement(Vector2 direction)
     {
-        direction = direction * 5;
+        // 스탯의 speed를 적용
+        direction = direction * m_statHandler.Speed;
 
         // 만약 넉백이 적용되어야한다면
         if(knockbackDuration > 0f)
