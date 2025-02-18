@@ -25,8 +25,11 @@ public abstract class BaseController : MonoBehaviour
     protected AnimationHandler m_animationHandler;
     protected StatHandler m_statHandler;
 
+    [SerializeField] public WeaponHandler weaponPrefab;
+    protected WeaponHandler weaponHandler;
 
-
+    protected bool isAttacking;
+    private float timeSinceLastAttack = float.MaxValue;
 
 
     protected virtual void Awake()
@@ -34,6 +37,13 @@ public abstract class BaseController : MonoBehaviour
         m_rigidbody2D = GetComponent<Rigidbody2D>();
         m_animationHandler = GetComponent<AnimationHandler>();
         m_statHandler = GetComponent<StatHandler>();
+
+        // 무기가 없다면
+        if (weaponPrefab != null)
+            weaponHandler = Instantiate(weaponPrefab, weaponPivot);
+        // 이미 무기가 있다면
+        else
+            weaponHandler = GetComponentInChildren<WeaponHandler>();
     }
 
     protected abstract void Start();
@@ -45,6 +55,9 @@ public abstract class BaseController : MonoBehaviour
 
         // 바라보는 방향에 따른 회전 처리.
         Rotate(lookDirection);
+
+        // delay를 주어 공격하도록 함
+        HandleAttackDelay();
     }
 
     protected virtual void FixedUpdate()
@@ -104,6 +117,8 @@ public abstract class BaseController : MonoBehaviour
         {
             weaponPivot.rotation = Quaternion.Euler(0f, 0f, rotZ);
         }
+
+        weaponHandler?.Rotate(isLeft);
     }
 
     // 넉백 적용 함수
@@ -113,5 +128,29 @@ public abstract class BaseController : MonoBehaviour
     {
         knockbackDuration = duration;
         knockBack = (transform.position - other.position).normalized * power;
+    }
+
+    // 일정시간마다 공격할 수 있게 딜레이를 주는 함수
+    private void HandleAttackDelay()
+    {
+        if (weaponHandler == null)
+            return;
+
+        if(timeSinceLastAttack <= weaponHandler.Delay)
+        {
+            timeSinceLastAttack += Time.deltaTime;
+        }
+
+        if(isAttacking && timeSinceLastAttack > weaponHandler.Delay)
+        {
+            timeSinceLastAttack = 0;
+            Attack();
+        }
+    }
+
+    protected virtual void Attack()
+    {
+        if (lookDirection != Vector2.zero)
+            weaponHandler?.Attack();
     }
 }

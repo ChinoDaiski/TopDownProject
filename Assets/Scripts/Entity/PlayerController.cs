@@ -56,6 +56,8 @@ public class PlayerController : BaseController
             // 해당 방향의 방향 벡터를 구한다.
             lookDirection = lookDirection.normalized;
         }
+
+        isAttacking = Input.GetMouseButton(0);
     }
 
 
