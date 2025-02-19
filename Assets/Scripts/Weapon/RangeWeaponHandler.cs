@@ -5,7 +5,7 @@ using UnityEngine;
 public class RangeWeaponHandler : WeaponHandler
 {
     [Header("Ranged Attack Data")]
-    [SerializeField] private Transform projectTileSpawnPosition;
+    [SerializeField] private Transform projectileSpawnPosition;
 
     [SerializeField] private int bulletIndex;
     public int BulletIndex { get { return bulletIndex; } }
@@ -28,6 +28,14 @@ public class RangeWeaponHandler : WeaponHandler
     [SerializeField] private Color projectileColor; // 발사체의 색상
     public Color ProjectileColor { get { return projectileColor; } }
 
+    private ProjectileManager projectileManager;
+
+    protected override void Start()
+    {
+        base.Start();
+        projectileManager = ProjectileManager.Instance;
+    }
+
     public override void Attack()
     {
         base.Attack();
@@ -49,7 +57,11 @@ public class RangeWeaponHandler : WeaponHandler
 
     private void CreateProjectile(Vector2 _lookDirection, float angle)
     {
-
+        // 발사체 생성은 발사체 매니저에서 제공하는 API에 따라 생성.
+        projectileManager.ShootBullet(
+                this,
+                projectileSpawnPosition.position,
+                RotateVector2(_lookDirection, angle));
     }
 
     private static Vector2 RotateVector2(Vector2 v, float degree)
